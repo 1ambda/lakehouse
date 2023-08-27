@@ -1,0 +1,43 @@
+# FROM apache/spark-py:v3.4.0
+FROM apache/spark:3.4.1-scala2.12-java11-python3-ubuntu
+
+USER root
+
+WORKDIR ${SPARK_HOME}
+ENV PATH="/opt/spark/sbin:/opt/spark/bin:${PATH}"
+
+ENV SPARK_VERSION_SHORT=3.4
+ENV SPARK_VERSION=3.4.2
+ENV AWS_SDK_VERSION=1.12.262
+ENV HADOOP_AWS_VERSION=3.3.4
+
+# Configure SPARK
+RUN apt-get update -y && apt-get install -y curl wget
+RUN curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_AWS_VERSION}/hadoop-aws-${HADOOP_AWS_VERSION}.jar -o ${SPARK_HOME}/jars/hadoop-aws-${HADOOP_AWS_VERSION}.jar
+RUN curl https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_VERSION}/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar -o ${SPARK_HOME}/jars/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar
+RUN curl https://repo1.maven.org/maven2/org/apache/spark/spark-hadoop-cloud_2.12/${SPARK_VERSION}/spark-hadoop-cloud_2.12-3.3.0.jar -o ${SPARK_HOME}/jars/spark-hadoop-cloud_2.12-${SPARK_VERSION}.jar
+
+# Configure ICEBERG
+ENV ICEBERG_VERSION=1.3.1
+ENV AWS_SDK_BUNDLE_VERSION=2.20.18
+
+RUN curl https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-${SPARK_VERSION_SHORT}_2.12/${ICEBERG_VERSION}/iceberg-spark-runtime-${SPARK_VERSION_SHORT}_2.12-${ICEBERG_VERSION}.jar -o ${SPARK_HOME}/jars/iceberg-spark-runtime-${SPARK_VERSION_SHORT}_2.12-${ICEBERG_VERSION}.jar
+RUN curl https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/${AWS_SDK_BUNDLE_VERSION}/bundle-${AWS_SDK_BUNDLE_VERSION}.jar -Lo /opt/spark/jars/aws-bundle-${AWS_SDK_BUNDLE_VERSION}.jar
+RUN curl https://repo1.maven.org/maven2/software/amazon/awssdk/url-connection-client/${AWS_SDK_BUNDLE_VERSION}/url-connection-client-${AWS_SDK_BUNDLE_VERSION}.jar -Lo /opt/spark/jars/url-connection-client-${AWS_SDK_BUNDLE_VERSION}.jar
+
+# Configure ZSH
+RUN apt-get install -y zsh git
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+ENV TERM xterm
+ENV ZSH_THEME robbyrussell
+RUN chsh -s /usr/bin/zsh
+
+# Configure PYTHON
+ENV PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH
+COPY ./docker/jupyter/requirements.txt /opt/requirements.txt
+RUN pip3 install -r /opt/requirements.txt
+COPY ./docker/jupyter/jupyter_server_config.py /root/.jupyter/
+COPY ./docker/jupyter/themes.jupyterlab-settings /root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

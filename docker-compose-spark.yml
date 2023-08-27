@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  spark-iceberg:
+    build:
+      dockerfile: ./docker/spark/Dockerfile-spark3.4
+    image: 1ambda/lakehouse:spark-3.4
+    container_name: spark-iceberg
+    hostname: spark-iceberg
+    entrypoint: |
+      /bin/bash -c "
+      jupyter lab --notebook-dir=/opt/notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root
+      "
+    ports:
+      - "4040:4040"
+      - "8900:8888"
+    depends_on:
+      - minio
+      - hive-metastore
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_PATH_STYLE_ACCESS=true
+
+    volumes:
+      - ./notebook:/opt/notebook
+      - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
+      - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+      - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf
+
+  spark-hudi:
+    build:
+      dockerfile: ./docker/spark/Dockerfile-spark3.3
+    image: 1ambda/lakehouse:spark-3.3
+    container_name: spark-hudi
+    hostname: spark-hudi
+    entrypoint: |
+      /bin/bash -c "
+      jupyter lab --notebook-dir=/opt/notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root
+      "
+    ports:
+      - "4041:4040"
+      - "8901:8888"
+    depends_on:
+      - minio
+      - hive-metastore
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_PATH_STYLE_ACCESS=true
+      - HOODIE_ENV_fs_DOT_s3a_DOT_impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+      - HOODIE_ENV_fs_DOT_s3a_DOT_access_DOT_key=minio;
+      - HOODIE_ENV_fs_DOT_s3a_DOT_awsSecretAccessKey=minio;
+      - HOODIE_ENV_fs_DOT_s3a_DOT_endpoint=http://minio:9000;
+      - HOODIE_ENV_fs_DOT_s3a_DOT_path_DOT_style_DOT_access=true;
+      - HOODIE_ENV_fs_DOT_s3_DOT_impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+      - HOODIE_ENV_fs_DOT_s3_DOT_access_DOT_key=minio;
+      - HOODIE_ENV_fs_DOT_s3_DOT_awsSecretAccessKey=minio;
+      - HOODIE_ENV_fs_DOT_s3_DOT_endpoint=http://minio:9000;
+      - HOODIE_ENV_fs_DOT_s3_DOT_path_DOT_style_DOT_access=true;
+      - HUDI_CONF_DIR=/opt/hudi/conf
+
+    volumes:
+      - ./notebook:/opt/notebook
+      - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
+      - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+      - ./docker/spark/spark-defaults-hudi.conf:/opt/spark/conf/spark-defaults.conf
+      - ./docker/spark/hudi-defaults.conf:/opt/hudi/conf/hudi-defaults.conf
