@@ -1,3 +1,4 @@
+# pre-commit autoupdate
 ---
 
 repos:
@@ -5,4 +6,35 @@ repos:
     rev: 0.6.1
     hooks:
       - id: nbstripout
+        files: ^notebook\/.*\.ipynb$
         args: ["--extra-keys", "metadata.pycharm"]
+
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        files: ^(dags|dbts)/
+        types: [python]
+        args: [--line-length=100]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        files: ^(dags|dbts)/
+        types: [python]
+        additional_dependencies: [
+          'flake8-blind-except',
+          'flake8-docstrings',
+          'flake8-bugbear',
+          'flake8-comprehensions',
+          'flake8-docstrings',
+          'flake8-implicit-str-concat',
+          'pydocstyle>=5.0.0',
+        ]
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: 3.7.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]

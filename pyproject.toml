@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "lakehouse"
+version = "0.1.0"
+description = ""
+authors = ["Kun <1amb4a@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dbt-core = "^1.6.1"
+dbt-trino = "^1.6.1"
+trino = "^0.326.0"
+
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^3.7.0"
+pre-commit = "^3.3.3"
+black = "^23.7.0"
+flake8 = "^6.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
