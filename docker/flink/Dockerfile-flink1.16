@@ -9,7 +9,7 @@ ENV HADOOP_HUDI_VERSION=2.10.2
 
 # Configure Hadoop
 WORKDIR /opt
-RUN curl -L https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_AWS_VERSION}/hadoop-${HADOOP_AWS_VERSION}.tar.gz -o /opt/hadoop-${HADOOP_AWS_VERSION}.tar.gz
+RUN curl -L http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_AWS_VERSION}/hadoop-${HADOOP_AWS_VERSION}.tar.gz -o /opt/hadoop-${HADOOP_AWS_VERSION}.tar.gz
 RUN tar xzvf hadoop-${HADOOP_AWS_VERSION}.tar.gz && rm hadoop-${HADOOP_AWS_VERSION}.tar.gz
 
 ENV HADOOP_HOME="/opt/hadoop"

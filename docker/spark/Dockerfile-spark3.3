@@ -51,7 +51,7 @@ ENV ZSH_THEME robbyrussell
 RUN chsh -s /usr/bin/zsh
 
 # Configure PYTHON
-ENV PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.7-src.zip:$PYTHONPATH
+ENV PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.5-src.zip:$PYTHONPATH
 COPY ./docker/jupyter/requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt
 COPY ./docker/jupyter/jupyter_server_config.py /root/.jupyter/
