@@ -1,0 +1,33 @@
+service:
+  openldap:
+    image: docker.io/bitnami/openldap:2.6
+    hostname: openldap
+    container_name: openldap
+    ports:
+      - '1389:1389'
+      - '1636:1636'
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_USERS=user01,user02
+      - LDAP_PASSWORDS=password1,password2
+      - LDAP_ROOT=dc=example,dc=org
+      - LDAP_USER_DC=users
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    hostname: keycloak
+    container_name: keycloak
+    ports:
+      - "18080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: adminpassword
+      KEYCLOAK_LOGLEVEL: INFO
+      ROOT_LOGLEVEL: INFO
+    command:
+      - start-dev
+      - --import-realm
+    restart: always
+    volumes:
+      - ./docker/volume/keycloak/:/opt/jboss/keycloak/standalone/data/

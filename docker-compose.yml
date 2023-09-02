@@ -1,15 +1,35 @@
 version: "3.9"
 services:
 
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./docker/volume/postgres:/var/lib/postgresql/data
+      - ./docker/postgres/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+
   hive-metastore:
     container_name: hive-metastore
     hostname: hive-metastore
-    image: 'starburstdata/hive:3.1.2-e.18'
+    build:
+      dockerfile: ./docker/hive-metastore/Dockerfile
+    image: 1ambda/lakehouse:hive-metastore-3.1.2
     ports:
       - '9083:9083' # Metastore Thrift
     environment:
       HIVE_METASTORE_DRIVER: org.postgresql.Driver
-      HIVE_METASTORE_JDBC_URL: jdbc:postgresql://metastore_db:5432/metastore
+      HIVE_METASTORE_JDBC_URL: jdbc:postgresql://postgres:5432/metastore
       HIVE_METASTORE_USER: hive
       HIVE_METASTORE_PASSWORD: hive
       HIVE_METASTORE_WAREHOUSE_DIR: s3://datalake/
@@ -17,25 +37,12 @@ services:
       S3_ACCESS_KEY: minio
       S3_SECRET_KEY: minio123
       S3_PATH_STYLE_ACCESS: "true"
-      REGION: ""
-      GOOGLE_CLOUD_KEY_FILE_PATH: ""
-      AZURE_ADL_CLIENT_ID: ""
-      AZURE_ADL_CREDENTIAL: ""
-      AZURE_ADL_REFRESH_URL: ""
-      AZURE_ABFS_STORAGE_ACCOUNT: ""
-      AZURE_ABFS_ACCESS_KEY: ""
-      AZURE_WASB_STORAGE_ACCOUNT: ""
-      AZURE_ABFS_OAUTH: ""
-      AZURE_ABFS_OAUTH_TOKEN_PROVIDER: ""
-      AZURE_ABFS_OAUTH_CLIENT_ID: ""
-      AZURE_ABFS_OAUTH_SECRET: ""
-      AZURE_ABFS_OAUTH_ENDPOINT: ""
-      AZURE_WASB_ACCESS_KEY: ""
-      HIVE_METASTORE_USERS_IN_ADMIN_ROLE: "admin"
     depends_on:
-      - metastore_db
+      postgres:
+        condition: service_healthy
 
   minio:
+    profiles: [ "metastore" ]
     container_name: minio
     hostname: minio
     image: 'minio/minio'
@@ -48,8 +55,8 @@ services:
       MINIO_DOMAIN: minio
     command: server /data --console-address ":9001"
 
-  # This job will create the "datalake" bucket on Minio
-  mc-job:
+  minio-job:
+    profiles: [ "metastore" ]
     image: 'minio/mc'
     entrypoint: |
       /bin/bash -c "
@@ -68,50 +75,188 @@ services:
     depends_on:
       - minio
 
-  metastore_db:
-    container_name: metastore_db
-    hostname: metastore_db
-    image: postgres:11
+  trino:
+    profiles: [ "trino" ]
+    container_name: trino
+    hostname: trino
+    image: "trinodb/trino:425"
     ports:
-      - "5432:5432"
+      - "8889:8889"
+    volumes:
+      - ./docker/trino/etc-coordinator:/etc/trino
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sS http://localhost:8889/ || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      - hive-metastore
+
+  trino-worker:
+    profiles: [ "trino" ]
+    container_name: trino-worker
+    hostname: trino-worker
+    image: "trinodb/trino:425"
+    volumes:
+      - ./docker/trino/etc-worker:/etc/trino
+    depends_on:
+      trino:
+        condition: service_healthy
+
+  spark-iceberg:
+    profiles: [ "spark" ]
+    build:
+      dockerfile: ./docker/spark/Dockerfile-spark3.4
+    image: 1ambda/lakehouse:spark-3.4
+    container_name: spark-iceberg
+    hostname: spark-iceberg
+    entrypoint: |
+      /bin/bash -c "
+      jupyter lab --notebook-dir=/opt/notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root
+      "
+    ports:
+      - "4040:4040"
+      - "8900:8888"
+    depends_on:
+      - minio
+      - hive-metastore
     environment:
-      POSTGRES_USER: hive
-      POSTGRES_PASSWORD: hive
-      POSTGRES_DB: metastore
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_PATH_STYLE_ACCESS=true
 
-  #  openldap:
-  #    image: docker.io/bitnami/openldap:2.6
-  #    hostname: openldap
-  #    container_name: openldap
-  #    ports:
-  #      - '1389:1389'
-  #      - '1636:1636'
-  #    environment:
-  #      - LDAP_ADMIN_USERNAME=admin
-  #      - LDAP_ADMIN_PASSWORD=adminpassword
-  #      - LDAP_USERS=user01,user02
-  #      - LDAP_PASSWORDS=password1,password2
-  #      - LDAP_ROOT=dc=example,dc=org
-  #      - LDAP_USER_DC=users
+    volumes:
+      - ./notebook:/opt/notebook
+      - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
+      - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+      - ./docker/spark/spark-defaults-iceberg.conf:/opt/spark/conf/spark-defaults.conf
 
-  #  keycloak:
-  #    image: quay.io/keycloak/keycloak
-  #    hostname: keycloak
-  #    container_name: keycloak
-  #    ports:
-  #      - "18080:8080"
-  #    environment:
-  #      KEYCLOAK_ADMIN: admin
-  #      KEYCLOAK_ADMIN_PASSWORD: adminpassword
-  #      KEYCLOAK_LOGLEVEL: INFO
-  #      ROOT_LOGLEVEL: INFO
-  #    command:
-  #      - start-dev
-  #      - --import-realm
-  #    restart: always
-  #    volumes:
-  #      - ./docker/keycloak/data/:/opt/jboss/keycloak/standalone/data/
+  spark-hudi:
+    profiles: [ "spark" ]
+    build:
+      dockerfile: ./docker/spark/Dockerfile-spark3.3
+    image: 1ambda/lakehouse:spark-3.3
+    container_name: spark-hudi
+    hostname: spark-hudi
+    entrypoint: |
+      /bin/bash -c "
+      jupyter lab --notebook-dir=/opt/notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --port=8888 --no-browser --allow-root
+      "
+    ports:
+      - "4041:4040"
+      - "8901:8888"
+    depends_on:
+      - minio
+      - hive-metastore
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_PATH_STYLE_ACCESS=true
+      - HOODIE_ENV_fs_DOT_s3a_DOT_impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+      - HOODIE_ENV_fs_DOT_s3a_DOT_access_DOT_key=minio;
+      - HOODIE_ENV_fs_DOT_s3a_DOT_awsSecretAccessKey=minio;
+      - HOODIE_ENV_fs_DOT_s3a_DOT_endpoint=http://minio:9000;
+      - HOODIE_ENV_fs_DOT_s3a_DOT_path_DOT_style_DOT_access=true;
+      - HOODIE_ENV_fs_DOT_s3_DOT_impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+      - HOODIE_ENV_fs_DOT_s3_DOT_access_DOT_key=minio;
+      - HOODIE_ENV_fs_DOT_s3_DOT_awsSecretAccessKey=minio;
+      - HOODIE_ENV_fs_DOT_s3_DOT_endpoint=http://minio:9000;
+      - HOODIE_ENV_fs_DOT_s3_DOT_path_DOT_style_DOT_access=true;
+      - HUDI_CONF_DIR=/opt/hudi/conf
 
+    volumes:
+      - ./notebook:/opt/notebook
+      - ./docker/jupyter/jupyter_server_config.py:/root/.jupyter/jupyter_server_config.py
+      - ./docker/jupyter/themes.jupyterlab-settings:/root/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+      - ./docker/spark/spark-defaults-hudi.conf:/opt/spark/conf/spark-defaults.conf
+      - ./docker/spark/hudi-defaults.conf:/opt/hudi/conf/hudi-defaults.conf
+
+
+  flink-jobmanager:
+    profiles: ["flink"]
+    build:
+      dockerfile: ./docker/flink/Dockerfile-flink1.16
+    image: 1ambda/lakehouse:flink-1.16
+    container_name: flink-jobmanager
+    hostname: flink-jobmanager
+    entrypoint: |
+      /bin/bash -c "
+      export HADOOP_CLASSPATH=`/opt/hadoop/bin/hadoop classpath`;
+      /docker-entrypoint.sh jobmanager;
+      "
+
+    working_dir: /opt/flink
+    ports:
+      - "8081:8081"
+      - "6123:6123"
+
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_PATH_STYLE_ACCESS=true
+      - |
+        FLINK_PROPERTIES=
+        fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+        fs.s3a.access.key: minio
+        fs.s3a.secret.key: minio123
+        fs.s3a.endpoint: http://minio:9000
+        fs.s3a.path.style.access: true
+        jobmanager.rpc.address: flink-jobmanager
+
+    volumes:
+      - ./docker/flink/hadoop-core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+      - ./docker/flink/hadoop-hive-site.xml:/opt/flink/conf/hive-site.xml
+      - ./docker/flink/flink-sql-hudi.sh:/opt/flink-client/flink-sql-hudi
+      - ./docker/flink/flink-init-hudi.sql:/opt/flink-client/flink-init-hudi.sql
+      - ./docker/flink/flink-sql-iceberg.sh:/opt/flink-client/flink-sql-iceberg
+      - ./docker/flink/flink-init-iceberg.sql:/opt/flink-client/flink-init-iceberg.sql
+
+  flink-taskmanager:
+    profiles: [ "flink" ]
+    build:
+      dockerfile: ./docker/flink/Dockerfile-flink1.16
+    image: 1ambda/lakehouse:flink-1.17
+    container_name: flink-taskmanager
+    hostname: flink-taskmanager
+    entrypoint: |
+      /bin/bash -c "
+      export HADOOP_CLASSPATH=`/opt/hadoop//bin/hadoop classpath`;
+      /docker-entrypoint.sh taskmanager;
+      "
+    working_dir: /opt/flink
+    environment:
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio123
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+      - S3_PATH_STYLE_ACCESS=true
+      - |
+        FLINK_PROPERTIES=
+        fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+        fs.s3a.access.key: minio
+        fs.s3a.secret.key: minio123
+        fs.s3a.endpoint: http://minio:9000
+        fs.s3a.path.style.access: true
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        parallelism.default: 2
+
+    volumes:
+      - ./docker/flink/hadoop-core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+      - ./docker/flink/hadoop-hive-site.xml:/opt/flink/conf/hive-site.xml
+
+    depends_on:
+      - flink-jobmanager
 
 networks:
   default:

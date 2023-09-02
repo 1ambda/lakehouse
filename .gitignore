@@ -1,4 +1,5 @@
 notebook/.ipynb_checkpoints/
+.DS_Store
 
 # Created by https://www.toptal.com/developers/gitignore/api/maven,java,intellij+all,intellij+iml,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=maven,java,intellij+all,intellij+iml,git
