@@ -15,11 +15,10 @@ seed-paths: [ "dbt-seeds" ]
 macro-paths: [ "dbt-macro" ]
 snapshot-paths: [ "dbt-snapshot" ]
 target-path: "target"
-clean-targets: # directories to be removed by `dbt clean`
+clean-targets:
   - "target"
   - "logs"
   - "dbt_modules"
-  # - "dbt_packages"
 
 # Configure variables
 vars:
@@ -28,11 +27,13 @@ vars:
 # Configure models
 models:
   lakehouse:
+    +on_table_exists: drop
     staging:
       +schema: staging
+      +materialized: view
+    mart:
+      +schema: mart
       +materialized: table
-      +on_table_exists: drop
-
 
 # Configure dispatches
 dispatch:

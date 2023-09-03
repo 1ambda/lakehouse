@@ -1,21 +1,21 @@
 version: 2
 
 models:
-  - name: staging_nations
+  - name: stg_nations
     description: staging layer for nations data
     tags:
-      - "iceberg"
-      - "staging"
+      - iceberg
+      - staging
     columns:
       - name: nation_key
         tests:
           - not_null
 
-  - name: staging_regions
+  - name: stg_regions
     description: staging layer for regions data
     tags:
-      - "iceberg"
-      - "staging"
+      - iceberg
+      - staging
     columns:
       - name: region_key
         tests:

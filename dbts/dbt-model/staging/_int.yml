@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: location
+    tags:
+      - iceberg
+      - intermediate
+    columns:
+      - name: nation_key
+        tests:
+          - unique
+          - not_null
+      - name: region_key
+        tests:
+          - not_null

@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: aggr_location
+    tags:
+      - iceberg
+      - aggregation
+    columns:
+      - name: loc
+        tests:
+          - not_null
+      - name: count

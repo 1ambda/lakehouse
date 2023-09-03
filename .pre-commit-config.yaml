@@ -133,3 +133,17 @@ repos:
   #     - id: dbt-test
   #       name: 'dbt test'
   #       verbose: true
+
+
+  # SQL
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 2.3.1
+    hooks:
+      - id: sqlfluff-fix
+        name: 'sqlfluff fix'
+        verbose: true
+        files: ^(dags|dbts)/
+      - id: sqlfluff-lint
+        name: 'sqlfluff lint'
+        verbose: true
+        files: ^(dags|dbts)/
