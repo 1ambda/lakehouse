@@ -5,6 +5,9 @@
 - [x] Trino 425
 - [x] Airflow 2.7.0
 - [x] Jupyterlab
+- [x] DBT Project
+
+<br/>
 
 ## Getting Started
 
@@ -33,10 +36,21 @@ Then access the lakehouse services.
 - Flink SQL (Iceberg): `docker exec -it flink-jobmanager flink-sql-iceberg`
 - Flink SQL (Hudi): `docker exec -it flink-jobmanager flink-sql-hudi;`
 
-# DBT Starter-kit
+<br/>
+
+## DBT Starter it
 
 ```bash
-make trino-cli
+# Run trino-related containers
+make compose.trino;
 
+# Prepare iceberg schema
+make trino-cli;
 $ create schema iceberg.staging WITH ( LOCATION = 's3://datalake/staging' );
+
+# Execute dbt commands
+cd dbts;
+dbt deps;
+dbt run;
+dbt test;
 ```
