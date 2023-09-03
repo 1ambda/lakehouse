@@ -3,7 +3,7 @@
 - [x] Spark 3.3 ~ 3.4 (Iceberg 1.3.1, Hudi 0.13.1)
 - [x] Flink 1.16 ~ 1.17 (Iceberg 1.3.1, Hudi 0.13.1)
 - [x] Trino 425
-- [x] Airflow 2.7.0 
+- [x] Airflow 2.7.0
 - [x] Jupyterlab
 
 ## Getting Started
@@ -21,7 +21,7 @@ COMPOSE_PROFILES=airflow docker-compose up;
 COMPOSE_PROFILES=trino,spark docker-compose up;
 ```
 
-Then access the lakehouse services. 
+Then access the lakehouse services.
 
 - Trino: http://localhost:8889
 - Airflow (`airflow` / `airflow`) : http://localhost:8080
@@ -32,3 +32,11 @@ Then access the lakehouse services.
 - Spark SQL (Hudi): `docker exec -it spark-hudi spark-sql`
 - Flink SQL (Iceberg): `docker exec -it flink-jobmanager flink-sql-iceberg`
 - Flink SQL (Hudi): `docker exec -it flink-jobmanager flink-sql-hudi;`
+
+# DBT Starter-kit
+
+```bash
+make trino-cli
+
+$ create schema iceberg.staging WITH ( LOCATION = 's3://datalake/staging' );
+```

@@ -1,0 +1,16 @@
+trino:
+  outputs:
+    local:
+      type: trino
+      method: none
+      user: 1ambda
+      password:
+      host: localhost
+      port: 8889
+      catalog: iceberg
+      schema: default
+      threads: 1
+      http_scheme: http
+      session_properties:
+        query_max_run_time: 1h
+  target: local

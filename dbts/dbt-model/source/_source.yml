@@ -1,0 +1,36 @@
+version: 2
+
+sources:
+  - name: tpch
+    catalog: tpch
+    schema: tiny
+    tables:
+      - name: nation
+        columns:
+          - name: nationkey
+            description: 25 nations are populated
+            tests:
+              - unique:
+                  severity: warn
+              - not_null:
+                  severity: warn
+          - name: name
+          - name: regionkey
+            description: Foreign Key to REGIONKEY
+            tests:
+              - relationships:
+                  to: source('tpch', 'region')
+                  field: regionkey
+          - name: comment
+
+      - name: region
+        columns:
+          - name: regionkey
+            description: 5 regions are populated
+            tests:
+              - unique:
+                  severity: warn
+              - not_null:
+                  severity: warn
+          - name: name
+          - name: comment

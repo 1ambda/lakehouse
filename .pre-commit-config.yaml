@@ -121,15 +121,15 @@ repos:
         types_or: [ python, rst, markdown, cython, c ]
         additional_dependencies: [ tomli ]
 
-  - repo: https://github.com/dbt-checkpoint/dbt-checkpoint
-    rev: v1.1.1
-    hooks:
-      # - id: dbt-deps
-      # name: 'dbt deps'
-      # verbose: true
-      - id: dbt-compile
-        name: 'dbt compile'
-        verbose: true
-      - id: dbt-test
-        name: 'dbt test'
-        verbose: true
+  # - repo: https://github.com/dbt-checkpoint/dbt-checkpoint
+  #   rev: v1.1.1
+  #   hooks:
+  #     # - id: dbt-deps
+  #     # name: 'dbt deps'
+  #     # verbose: true
+  #     - id: dbt-compile
+  #       name: 'dbt compile'
+  #       verbose: true
+  #     - id: dbt-test
+  #       name: 'dbt test'
+  #       verbose: true

@@ -1,0 +1,40 @@
+# Configure projects
+name: 'lakehouse'
+version: '0.0.1'
+config-version: 2
+require-dbt-version: [ ">=1.4.0", "<2.0.0" ]
+
+# Configure profiles
+profile: 'trino'
+
+# Configure paths
+model-paths: [ "dbt-model" ]
+analysis-paths: [ "dbt-analysis" ]
+test-paths: [ "dbt-test" ]
+seed-paths: [ "dbt-seeds" ]
+macro-paths: [ "dbt-macro" ]
+snapshot-paths: [ "dbt-snapshot" ]
+target-path: "target"
+clean-targets: # directories to be removed by `dbt clean`
+  - "target"
+  - "logs"
+  - "dbt_modules"
+  # - "dbt_packages"
+
+# Configure variables
+vars:
+  debug_logs: "{{ env_var('DBT_EDR_DEBUG', True) }}"
+
+# Configure models
+models:
+  lakehouse:
+    staging:
+      +schema: staging
+      +materialized: table
+      +on_table_exists: drop
+
+
+# Configure dispatches
+dispatch:
+  - macro_namespace: dbt_utils
+    search_order: [ 'trino_utils', 'dbt_utils' ]
