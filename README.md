@@ -2,16 +2,18 @@
 
 ![check](https://github.com/1ambda/lakehouse/actions/workflows/check.yml/badge.svg)
 
-| Pipeline Component                     | Version | Description         |
-|----------------------------------------|---------|---------------------|
-| [Trino](https://trino.io/)             | 425+    | Query Engine        |
-| [DBT](https://www.getdbt.com/)         | 1.5+    | Analytics Framework |
-| [Spark](https://spark.apache.org/)     | 3.3+    | Computing Engine    |
-| [Flink](https://flink.apache.org/)     | 1.16+   | Computing Engine    |
-| [Iceberg](https://iceberg.apache.org/) | 1.3.1+  | Table Format        |
-| [Hudi](https://hudi.apache.org/)       | 0.13.1+ | Table Format        |
-| [Airflow](https://airflow.apache.org/) | 2.7+    | Scheduler           |
-| [Jupyterlab](https://jupyter.org/)     | 3+      | Notebook            |
+Supported Data Pipeline Components
+
+| Pipeline Component                     | Version | Description              |
+|----------------------------------------|---------|--------------------------|
+| [Trino](https://trino.io/)             | 425+    | Query Engine             |
+| [DBT](https://www.getdbt.com/)         | 1.5+    | Analytics Framework      |
+| [Spark](https://spark.apache.org/)     | 3.3+    | Computing Engine         |
+| [Flink](https://flink.apache.org/)     | 1.16+   | Computing Engine         |
+| [Iceberg](https://iceberg.apache.org/) | 1.3.1+  | Table Format (Lakehouse) |
+| [Hudi](https://hudi.apache.org/)       | 0.13.1+ | Table Format (Lakehouse) |
+| [Airflow](https://airflow.apache.org/) | 2.7+    | Scheduler                |
+| [Jupyterlab](https://jupyter.org/)     | 3+      | Notebook                 |
 
 <br/>
 

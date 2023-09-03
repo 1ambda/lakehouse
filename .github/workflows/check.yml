@@ -19,13 +19,28 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3.6.0
+
+      - name: python-action
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
       - name: poetry-action
         uses: snok/install-poetry@v1
         with:
           installer-parallel: true
+
       - name: poetry-install
         run: poetry install
-      - uses: actions/setup-python@v4
+
+      - name: dbt-action
+        uses: mwhitaker/dbt-action@master
         with:
-          python-version: '3.10'
-      - uses: pre-commit/action@v3.0.0
+          dbt_command: "dbt deps --project-dir dbts/ --profiles-dir dbts/"
+
+      - name: precommit-action
+        uses: pre-commit/action@v3.0.0
+        env:
+          SKIP: sqlfluff-fix,sqlfluff-lint
+        with:
+          extra_args: --color=always --show-diff-on-failure
