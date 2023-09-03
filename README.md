@@ -60,6 +60,7 @@ cd dbts;
 dbt deps;
 dbt run;
 dbt test;
+dbt docs generate && dbt docs serve --port 8070; # http://localhost:8070
 
 # Select dbt-created tables from trino-cli
 make trino-cli;
