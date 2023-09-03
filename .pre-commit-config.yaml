@@ -73,14 +73,16 @@ repos:
           - click >= 8.1.0, != 8.1.4, != 8.1.5
           - packaging >= 22.0
           - platformdirs >= 2.1.0
-          - pytest
-          - hypothesis
-          - types-PyYAML
-          - types-attrs
+          # Type stubs
           - attrs
+          - types-attrs
+          - types-PyYAML
           - types-requests
           - types-python-dateutil
-
+          - types-docutils
+          # Typed libraries
+          - pytest
+          - hypothesis
 
     #  - repo: https://github.com/psf/black
     #    rev: 23.7.0

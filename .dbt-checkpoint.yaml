@@ -1,3 +1,0 @@
-version: 1
-disable-tracking: true
-dbt-project-dir: dbts

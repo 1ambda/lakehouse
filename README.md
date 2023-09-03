@@ -1,11 +1,17 @@
 # Lakehouse Playground
 
-- [x] Spark 3.3 ~ 3.4 (Iceberg 1.3.1, Hudi 0.13.1)
-- [x] Flink 1.16 ~ 1.17 (Iceberg 1.3.1, Hudi 0.13.1)
-- [x] Trino 425
-- [x] Airflow 2.7.0
-- [x] Jupyterlab for computing engines
-- [x] DBT Project running on airflow
+![check](https://github.com/1ambda/lakehouse/actions/workflows/check.yml/badge.svg)
+
+| Pipeline Component                     | Version | Description         |
+|----------------------------------------|---------|---------------------|
+| [Trino](https://trino.io/)             | 425+    | Query Engine        |
+| [DBT](https://www.getdbt.com/)         | 1.5+    | Analytics Framework |
+| [Spark](https://spark.apache.org/)     | 3.3+    | Computing Engine    |
+| [Flink](https://flink.apache.org/)     | 1.16+   | Computing Engine    |
+| [Iceberg](https://iceberg.apache.org/) | 1.3.1+  | Table Format        |
+| [Hudi](https://hudi.apache.org/)       | 0.13.1+ | Table Format        |
+| [Airflow](https://airflow.apache.org/) | 2.7+    | Scheduler           |
+| [Jupyterlab](https://jupyter.org/)     | 3+      | Notebook            |
 
 <br/>
 
