@@ -5,10 +5,12 @@ help:
 	@echo ""
 	@echo "	 trino.cli\t		Execute trino-cli"
 	@echo "	 trino.shell\t\t 	Access trino-coordinator"
+	@echo "	 airflow.shell\t\t 	Access airflow-scheduler"
 	@echo ""
 	@echo "	 compose.trino\t\t 	Run trino-related containers"
+	@echo "	 compose.dbt\t\t 	Run dbt-related containers"
 	@echo ""
-	@echo "	 precommit\t		Execute pre-commit hooks"
+	@echo "	 check\t			Execute pre-commit hooks"
 	@echo "	 changelog\t	 	Update 'CHANGELOG.md'"
 	@echo ""
 
@@ -20,13 +22,20 @@ trino.cli:
 trino.shell:
 	docker exec -w /etc/trino -it trino /bin/bash
 
+.PHONY: airflow.shell
+airflow.shell:
+	docker exec -it airflow-scheduler /bin/bash
+
 .PHONY: compose.trino
 compose.trino:
 	COMPOSE_PROFILES=trino docker-compose up
 
+.PHONY: compose.dbt
+compose.dbt:
+	COMPOSE_PROFILES=trino,airflow docker-compose up
 
-.PHONY: precommit
-precommit:
+.PHONY:check
+check:
 	@ echo ""
 	@ echo ""
 	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Executing pre-commit hooks"

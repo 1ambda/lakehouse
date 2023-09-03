@@ -4,8 +4,8 @@
 - [x] Flink 1.16 ~ 1.17 (Iceberg 1.3.1, Hudi 0.13.1)
 - [x] Trino 425
 - [x] Airflow 2.7.0
-- [x] Jupyterlab
-- [x] DBT Project
+- [x] Jupyterlab for computing engines
+- [x] DBT Project running on airflow
 
 <br/>
 
@@ -42,15 +42,27 @@ Then access the lakehouse services.
 
 ```bash
 # Run trino-related containers
-make compose.trino;
+make compose.dbt;
 
 # Prepare iceberg schema
 make trino-cli;
 $ create schema iceberg.staging WITH ( LOCATION = 's3://datalake/staging' );
+$ create schema iceberg.mart WITH ( LOCATION = 's3://datalake/mart' );
 
-# Execute dbt commands
+# Execute dbt commands locally
 cd dbts;
 dbt deps;
 dbt run;
 dbt test;
+
+# Select dbt-created tables from trino-cli
+make trino-cli;
+$ SELECT * FROM iceberg.mart.aggr_location LIMIT 10;
+$ SELECT * FROM iceberg.staging.int_location LIMIT 10;
+$ SELECT * FROM iceberg.staging.stg_nations LIMIT 10;
+$ SELECT * FROM iceberg.staging.stg_regions LIMIT 10;
+
+# Execute airflow dags for dbt
+make airflow.shell;
+airflow dags backfill dag_dbt --local --reset-dagruns  -s 2022-09-02 -e 2022-09-03;
 ```

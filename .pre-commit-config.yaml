@@ -39,7 +39,7 @@ repos:
 
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: ''
+    rev: 'v0.14'
     hooks:
       - id: validate-pyproject
         name: 'python validate pyproject'
@@ -61,16 +61,20 @@ repos:
         verbose: true
         files: ^(dags|dbts)/
         types: [ python ]
-        args: [ --strict, --ignore-missing-imports ]
+        args: [ "--config-file", "./mypy.ini",  ]
         additional_dependencies:
           - tokenize-rt==3.2.0
-          - types-PyYAML
           - tomli >= 0.2.6, < 2.0.0
           - click >= 8.1.0, != 8.1.4, != 8.1.5
           - packaging >= 22.0
           - platformdirs >= 2.1.0
           - pytest
           - hypothesis
+          - types-PyYAML
+          - types-attrs
+          - attrs
+          - types-requests
+          - types-python-dateutil
 
 
             #  - repo: https://github.com/psf/black

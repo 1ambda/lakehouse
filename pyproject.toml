@@ -11,6 +11,7 @@ dbt-core = "^1.5.0"
 dbt-trino = "^1.5.0"
 trino = "^0.326.0"
 urllib3 = "^1.26.16"
+airflow-dbt = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
@@ -19,6 +20,7 @@ git-changelog = "^2.2.0"
 sqlfluff = "^2.3.1"
 sqlfluff-templater-dbt = "^2.3.1"
 ruff = "^0.0.287"
+black = "^23.7.0"
 
 [build-system]
 requires = ["poetry-core"]
