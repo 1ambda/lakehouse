@@ -52,7 +52,7 @@ services:
       - ./docker/volume/postgres:/var/lib/postgresql/data
       - ./docker/postgres/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -94,6 +94,8 @@ services:
 
   minio-job:
     image: 'minio/mc'
+    container_name: minio-job
+    hostname: minio-job
     entrypoint: |
       /bin/bash -c "
       sleep 5;
@@ -122,28 +124,26 @@ services:
     container_name: trino
     hostname: trino
     image: "trinodb/trino:425"
+    restart: always
     ports:
       - "8889:8889"
     volumes:
       - ./docker/trino/etc-coordinator:/etc/trino
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sS http://localhost:8889/ || exit 1"]
-      interval: 5s
-      retries: 5
-      start_period: 15s
+      - ./docker/trino/catalog:/etc/trino/catalog
     depends_on:
       - hive-metastore
 
   trino-worker:
-    profiles: [ "trino" ]
+    profiles: [ "trino-worker" ]
     container_name: trino-worker
     hostname: trino-worker
     image: "trinodb/trino:425"
+    restart: always
     volumes:
       - ./docker/trino/etc-worker:/etc/trino
+      - ./docker/trino/catalog:/etc/trino/catalog
     depends_on:
-      trino:
-        condition: service_healthy
+      - trino
 
   ####################################################################################################
   #
@@ -232,7 +232,7 @@ services:
   ####################################################################################################
 
   flink-jobmanager:
-    profiles: ["flink"]
+    profiles: [ "flink" ]
     build:
       dockerfile: ./docker/flink/Dockerfile-flink1.16
     image: 1ambda/lakehouse:flink-1.16
@@ -311,11 +311,11 @@ services:
     depends_on:
       - flink-jobmanager
 
-####################################################################################################
-#
-# Airflow
-#
-####################################################################################################
+  ####################################################################################################
+  #
+  # Airflow
+  #
+  ####################################################################################################
   airflow-webserver:
     <<: *airflow-common
     profiles: [ "airflow" ]
@@ -324,7 +324,7 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -341,7 +341,7 @@ services:
     container_name: airflow-scheduler
     command: scheduler
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      test: [ "CMD", "curl", "--fail", "http://localhost:8974/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -380,7 +380,7 @@ services:
     container_name: airflow-triggerer
     command: triggerer
     healthcheck:
-      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      test: [ "CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -414,7 +414,7 @@ services:
       - -c
       - |
         mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        chown -R "50000:0" /sources/{logs,dags,plugins}
         exec /entrypoint airflow version
     # yamllint enable rule:line-length
     environment:
@@ -434,7 +434,7 @@ services:
     expose:
       - 6379
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 30s
       retries: 50

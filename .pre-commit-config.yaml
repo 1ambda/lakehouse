@@ -1,5 +1,8 @@
 # pre-commit autoupdate
 ---
+default_language_version:
+  python: python3
+minimum_pre_commit_version: '3.4.0'
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -12,7 +15,7 @@ repos:
       - id: check-toml
       - id: check-xml
       - id: check-yaml
-        exclude: ^ci/meta.yaml$
+        exclude: ^.pre-commit-config.yaml$
       - id: debug-statements
       - id: end-of-file-fixer
         exclude: \.txt$
@@ -60,7 +63,6 @@ repos:
           - Flake8-pyproject
           - pydocstyle>=5.0.0
 
-
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
@@ -96,6 +98,13 @@ repos:
         verbose: true
         stages: [ commit-msg ]
 
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+        name: 'git conflict enforcement'
+        verbose: true
+
   # - repo: https://github.com/pre-commit/pre-commit-hooks
   #   rev: v4.4.0
   #   hooks:
@@ -111,3 +120,16 @@ repos:
       - id: codespell
         types_or: [ python, rst, markdown, cython, c ]
         additional_dependencies: [ tomli ]
+
+  - repo: https://github.com/dbt-checkpoint/dbt-checkpoint
+    rev: v1.1.1
+    hooks:
+      # - id: dbt-deps
+      # name: 'dbt deps'
+      # verbose: true
+      - id: dbt-compile
+        name: 'dbt compile'
+        verbose: true
+      - id: dbt-test
+        name: 'dbt test'
+        verbose: true
