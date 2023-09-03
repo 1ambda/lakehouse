@@ -2,39 +2,92 @@
 ---
 
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+        name: 'default trailing whitespace'
+        verbose: true
+
   - repo: https://github.com/kynan/nbstripout
     rev: 0.6.1
     hooks:
       - id: nbstripout
+        name: 'jupyter truncate output'
+        verbose: true
         files: ^notebook\/.*\.ipynb$
-        args: ["--extra-keys", "metadata.pycharm"]
+        args: [ "--extra-keys", "metadata.pycharm" ]
 
   - repo: https://github.com/psf/black
     rev: 23.7.0
     hooks:
       - id: black
+        name: 'python black'
+        verbose: true
         files: ^(dags|dbts)/
-        types: [python]
-        args: [--line-length=100]
+        types: [ python ]
+        args: [ --line-length=120 ]
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
     hooks:
       - id: flake8
+        name: 'python flake8'
+        verbose: true
         files: ^(dags|dbts)/
-        types: [python]
-        additional_dependencies: [
-          'flake8-blind-except',
-          'flake8-docstrings',
-          'flake8-bugbear',
-          'flake8-comprehensions',
-          'flake8-docstrings',
-          'flake8-implicit-str-concat',
-          'pydocstyle>=5.0.0',
-        ]
+        types: [ python ]
+        additional_dependencies:
+          - flake8-blind-except
+          - flake8-docstrings
+          - flake8-bugbear
+          - flake8-comprehensions
+          - flake8-docstrings
+          - flake8-implicit-str-concat
+          - flake8-simplify
+          - Flake8-pyproject
+          - pydocstyle>=5.0.0
 
-  - repo: https://github.com/commitizen-tools/commitizen
-    rev: 3.7.0
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
     hooks:
-      - id: commitizen
+      - id: isort
+        name: 'python isort'
+        verbose: true
+        files: ^(dags|dbts)/
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v1.5.1'
+    hooks:
+      - id: mypy
+        name: 'python type check'
+        verbose: true
+        files: ^(dags|dbts)/
+        types: [ python ]
+        args: [ --strict, --ignore-missing-imports ]
+        additional_dependencies:
+          - tokenize-rt==3.2.0
+          - types-PyYAML
+          - tomli >= 0.2.6, < 2.0.0
+          - click >= 8.1.0, != 8.1.4, != 8.1.5
+          - packaging >= 22.0
+          - platformdirs >= 2.1.0
+          - pytest
+          - hypothesis
+
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+        name: 'git commit message enforcement'
+        verbose: true
         stages: [commit-msg]
+
+  # - repo: https://github.com/pre-commit/pre-commit-hooks
+  #   rev: v4.4.0
+  #   hooks:
+  #     - id: no-commit-to-branch
+  #       name: 'git branch name enforcement'
+  #       verbose: true
+  #       args: ['--pattern', '^(?!(feature/hotfix))/.*']
+  #       # args: [ '--branch', 'master', '--branch', 'main', '--pattern', 'release/.*' ]

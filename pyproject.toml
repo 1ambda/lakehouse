@@ -7,8 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-dbt-core = "^1.6.1"
-dbt-trino = "^1.6.1"
+dbt-core = "^1.5.0"
+dbt-trino = "^1.5.0"
 trino = "^0.326.0"
 
 
@@ -17,6 +17,8 @@ commitizen = "^3.7.0"
 pre-commit = "^3.3.3"
 black = "^23.7.0"
 flake8 = "^6.1.0"
+apache-airflow = "2.7.0"
+git-changelog = "^2.2.0"
 
 [build-system]
 requires = ["poetry-core"]
