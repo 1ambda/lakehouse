@@ -19,6 +19,7 @@ black = "^23.7.0"
 flake8 = "^6.1.0"
 apache-airflow = "2.7.0"
 git-changelog = "^2.2.0"
+sqlfluff = "^2.3.1"
 
 [build-system]
 requires = ["poetry-core"]
