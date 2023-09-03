@@ -1,3 +1,3 @@
 dbts/target/
 dbts/dbt_packages/
-dbts/macros/
+dbts/dbt-macro/

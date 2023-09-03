@@ -6,4 +6,3 @@ ${FLINK_HOME}/bin/sql-client.sh embedded --init $SQL_CLIENT_HOME/flink-init-iceb
   -D sql-client.verbose=true \
   -D sql-client.execution.result-mode=TABLEAU \
   shell
-
