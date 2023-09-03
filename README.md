@@ -38,7 +38,7 @@ Then access the lakehouse services.
 
 <br/>
 
-## DBT Starter it
+## DBT Starter kit
 
 ```bash
 # Run trino-related containers

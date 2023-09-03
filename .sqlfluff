@@ -1,18 +1,34 @@
 [sqlfluff]
-
 # Supported dialects https://docs.sqlfluff.com/en/stable/dialects.html
 dialect = trino
-templater = jinja
+templater = dbt
 
 exclude_rules = ambiguous.column_count, structure.column_order, references.keywords
 max_line_length = 120
 processes = -1
 
+[sqlfluff:templater]
+unwrap_wrapped_queries = True
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
+
 [sqlfluff:templater:dbt]
 project_dir = ./dbts
+profiles_dir = ./dbts
+profile = trino
 
 [sqlfluff:indentation]
 allow_implicit_indents = true
+indented_joins = False
+indented_ctes = False
+indented_using_on = True
+template_blocks_indent = True
+
+[sqlfluff:rules]
+allow_scalar = True
+single_table_references = consistent
+unquoted_identifiers_policy = all
 
 [sqlfluff:rules:aliasing.table]
 aliasing = explicit

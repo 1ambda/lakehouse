@@ -25,8 +25,8 @@ with DAG(
     run_this = BashOperator(
         task_id="run_after_loop",
         bash_command="echo 1",
-    )
-    # [END howto_operator_bash]
+)
+# [END howto_operator_bash]
 
     run_this >> run_this_last
 
