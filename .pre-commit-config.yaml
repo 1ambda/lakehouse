@@ -3,6 +3,11 @@
 default_language_version:
   python: python3
 minimum_pre_commit_version: '3.4.0'
+default_stages:
+  - pre-commit
+  - pre-merge-commit
+  - pre-push
+  - manual
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -61,7 +66,7 @@ repos:
         verbose: true
         files: ^(dags|dbts)/
         types: [ python ]
-        args: [ "--config-file", "./mypy.ini",  ]
+        args: [ "--config-file", "./mypy.ini", ]
         additional_dependencies:
           - tokenize-rt==3.2.0
           - tomli >= 0.2.6, < 2.0.0
@@ -77,58 +82,58 @@ repos:
           - types-python-dateutil
 
 
-            #  - repo: https://github.com/psf/black
-            #    rev: 23.7.0
-            #    hooks:
-            #      - id: black
-            #        name: 'python black'
-            #        verbose: true
-            #        files: ^(dags|dbts)/
-            #        types: [ python ]
-            #        args: [ --line-length=120 ]
-            #
-            #      - id: black-jupyter
-            #        name: 'jupyter black'
-            #        verbose: true
-            #        files: ^(notebook)/
-            #
-            #  - repo: https://github.com/PyCQA/autoflake
-            #    rev: v2.2.0
-            #    hooks:
-            #      - id: autoflake
-            #        name: 'python autoflake'
-            #        args: [
-            #          --in-place,
-            #          --remove-all-unused-imports,
-            #          --remove-unused-variables,
-            #        ]
-            #
-            #  - repo: https://github.com/pycqa/flake8
-            #    rev: 6.1.0
-            #    hooks:
-            #      - id: flake8
-            #        name: 'python flake8'
-            #        verbose: true
-            #        files: ^(dags|dbts)/
-            #        types: [ python ]
-            #        additional_dependencies:
-            #          - flake8-blind-except
-            #          - flake8-docstrings
-            #          - flake8-bugbear
-            #          - flake8-comprehensions
-            #          - flake8-docstrings
-            #          - flake8-implicit-str-concat
-            #          - flake8-simplify
-            #          - Flake8-pyproject
-            #          - pydocstyle>=5.0.0
-            #
-            #  - repo: https://github.com/pycqa/isort
-            #    rev: 5.12.0
-            #    hooks:
-            #      - id: isort
-            #        name: 'python isort'
-            #        verbose: true
-          #        files: ^(dags|dbts)/
+    #  - repo: https://github.com/psf/black
+    #    rev: 23.7.0
+    #    hooks:
+    #      - id: black
+    #        name: 'python black'
+    #        verbose: true
+    #        files: ^(dags|dbts)/
+    #        types: [ python ]
+    #        args: [ --line-length=120 ]
+    #
+    #      - id: black-jupyter
+    #        name: 'jupyter black'
+    #        verbose: true
+    #        files: ^(notebook)/
+    #
+    #  - repo: https://github.com/PyCQA/autoflake
+    #    rev: v2.2.0
+    #    hooks:
+    #      - id: autoflake
+    #        name: 'python autoflake'
+    #        args: [
+    #          --in-place,
+    #          --remove-all-unused-imports,
+    #          --remove-unused-variables,
+    #        ]
+    #
+    #  - repo: https://github.com/pycqa/flake8
+    #    rev: 6.1.0
+    #    hooks:
+    #      - id: flake8
+    #        name: 'python flake8'
+    #        verbose: true
+    #        files: ^(dags|dbts)/
+    #        types: [ python ]
+    #        additional_dependencies:
+    #          - flake8-blind-except
+    #          - flake8-docstrings
+    #          - flake8-bugbear
+    #          - flake8-comprehensions
+    #          - flake8-docstrings
+    #          - flake8-implicit-str-concat
+    #          - flake8-simplify
+    #          - Flake8-pyproject
+    #          - pydocstyle>=5.0.0
+    #
+    #  - repo: https://github.com/pycqa/isort
+    #    rev: 5.12.0
+    #    hooks:
+    #      - id: isort
+    #        name: 'python isort'
+    #        verbose: true
+    #        files: ^(dags|dbts)/
 
   ####################################################################################################
   # GIT
