@@ -6,8 +6,16 @@ repos:
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
-        name: 'default trailing whitespace'
-        verbose: true
+      - id: end-of-file-fixer
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+        exclude: ^ci/meta.yaml$
+      - id: debug-statements
+      - id: end-of-file-fixer
+        exclude: \.txt$
 
   - repo: https://github.com/kynan/nbstripout
     rev: 0.6.1
@@ -27,6 +35,11 @@ repos:
         files: ^(dags|dbts)/
         types: [ python ]
         args: [ --line-length=120 ]
+
+      - id: black-jupyter
+        name: 'jupyter black'
+        verbose: true
+        files: ^(notebook)/
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
@@ -81,7 +94,7 @@ repos:
       - id: gitlint
         name: 'git commit message enforcement'
         verbose: true
-        stages: [commit-msg]
+        stages: [ commit-msg ]
 
   # - repo: https://github.com/pre-commit/pre-commit-hooks
   #   rev: v4.4.0
@@ -91,3 +104,10 @@ repos:
   #       verbose: true
   #       args: ['--pattern', '^(?!(feature/hotfix))/.*']
   #       # args: [ '--branch', 'master', '--branch', 'main', '--pattern', 'release/.*' ]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.5
+    hooks:
+      - id: codespell
+        types_or: [ python, rst, markdown, cython, c ]
+        additional_dependencies: [ tomli ]

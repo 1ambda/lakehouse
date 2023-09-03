@@ -10,7 +10,7 @@ python = "^3.10"
 dbt-core = "^1.5.0"
 dbt-trino = "^1.5.0"
 trino = "^0.326.0"
-
+urllib3 = "^1.26.16"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^3.7.0"
