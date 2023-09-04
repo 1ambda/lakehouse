@@ -21,7 +21,57 @@ sqlfluff = "^2.3.1"
 sqlfluff-templater-dbt = "^2.3.1"
 ruff = "^0.0.287"
 black = "^23.7.0"
+pytest = "^7.4.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+line-length = 100  # defaults to 88 like black
+target-version = "py311"  # the python version to target, useful when considering code upgrades, defaults to "py310"
+fix = true
+show-source = true
+
+format = "grouped"
+select = [
+    # pycodestyle
+    "E",
+    "W",
+    # pyflakes
+    "F",
+    # pylint
+    "PLC",
+    "PLE",
+    "PLW",
+    # isort
+    "I",
+    # flake8-builtins
+    "A",
+    # flake8-bugbear
+    "B",
+    # flake8-commas
+    "COM",
+    # flake8-comprehensions
+    "C4",
+    # flake8-datetimez
+    "DTZ",
+    # flake8-implicit-str-concat
+    "ISC",
+    # flake8-pie
+    "PIE",
+    # flake8-pytest-style
+    "PT",
+    # flake8-quotes
+    "Q",
+    # flake8-tidy-imports
+    "TID",
+    # explicitly select rules under the nursery-flag introduced in ruff 0.0.269
+    # remove once enabled via the "E" selector
+    "E111", "E112", "E113", "E114", "E115", "E116", "E117",
+    "E201", "E202", "E203", "E211", "E221", "E222", "E223",
+    "E224", "E225", "E226", "E227", "E228", "E231", "E251",
+    "E252", "E261", "E262", "E265", "E266", "E271", "E272",
+    "E273", "E274", "E275",
+]

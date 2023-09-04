@@ -34,6 +34,15 @@ compose.trino:
 compose.dbt:
 	COMPOSE_PROFILES=trino,airflow docker-compose up
 
+.PHONY:test
+test:
+	@ echo ""
+	@ echo ""
+	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Executing pytest"
+	@ AIRFLOW_HOME=$(shell pwd) poetry run pytest dags-test/
+	@ echo ""
+	@ echo ""
+
 .PHONY:check
 check:
 	@ echo ""

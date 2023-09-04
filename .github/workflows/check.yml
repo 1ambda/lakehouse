@@ -44,3 +44,7 @@ jobs:
           SKIP: sqlfluff-fix,sqlfluff-lint
         with:
           extra_args: --color=always --show-diff-on-failure
+
+      - name: pytest
+        run: |
+          make test;

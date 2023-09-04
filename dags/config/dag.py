@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict
+from typing import Any
 
 CONST_DEFAULT_ARGS = {
     "owner": "airflow",
@@ -6,7 +6,7 @@ CONST_DEFAULT_ARGS = {
 }
 
 
-def build_default_args(custom_args: Optional[Dict[Any, Any]] = None) -> Dict[Any, Any]:
+def build_default_args(custom_args: dict[Any, Any] | None = None) -> dict[Any, Any]:
     actual_args = CONST_DEFAULT_ARGS.copy()
 
     if custom_args:
