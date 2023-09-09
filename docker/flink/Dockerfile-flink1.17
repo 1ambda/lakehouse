@@ -36,6 +36,17 @@ RUN curl -L https://repo1.maven.org/maven2/software/amazon/awssdk/url-connection
 RUN curl -L https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-flink-runtime-${FLINK_VERSION_SHORT}/${ICEBERG_VERSION}/iceberg-flink-runtime-${FLINK_VERSION_SHORT}-${ICEBERG_VERSION}.jar \
     -o ${FLINK_HOME}/lib/iceberg-flink-runtime-${FLINK_VERSION_SHORT}-${ICEBERG_VERSION}.jar
 
+# Configure Plugins
+ENV KAFKA_VERSION=3.5.0
+RUN curl -L https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/${FLINK_VERSION}/flink-sql-connector-kafka-${FLINK_VERSION}.jar \
+    -o ${FLINK_HOME}/lib/flink-sql-connector-kafka-${FLINK_VERSION}.jar
+RUN curl -L https://repo1.maven.org/maven2/org/apache/flink/flink-avro-confluent-registry/${FLINK_VERSION}/flink-avro-confluent-registry-${FLINK_VERSION}.jar \
+    -o ${FLINK_HOME}/lib/flink-avro-confluent-registry-${FLINK_VERSION}.jar
+RUN curl -L https://repo1.maven.org/maven2/org/apache/flink/flink-connector-kafka/${FLINK_VERSION}/flink-connector-kafka-${FLINK_VERSION}.jar \
+    -o ${FLINK_HOME}/lib/flink-connector-kafka-${FLINK_VERSION}.jar
+RUN curl -L https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/${KAFKA_VERSION}/kafka-clients-${KAFKA_VERSION}.jar \
+    -o ${FLINK_HOME}/lib/kafka-clients-${KAFKA_VERSION}.jar
+
 # Configure FLINK CLI
 ENV SQL_CLIENT_HOME /opt/flink-client
 ENV PATH="/opt/flink-client:${PATH}"

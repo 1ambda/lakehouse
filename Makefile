@@ -36,7 +36,7 @@ compose.dbt:
 
 .PHONY: compose.cdc
 compose.cdc:
-	COMPOSE_PROFILES=kafka docker-compose -f dokcer-compose-cdc.yml up
+	COMPOSE_PROFILES=flink,kafka docker-compose -f docker-compose.yml -f docker-compose-cdc.yml up
 
 .PHONY: compose.clean
 compose.clean:

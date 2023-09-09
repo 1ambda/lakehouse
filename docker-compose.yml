@@ -262,6 +262,10 @@ services:
         fs.s3a.endpoint: http://minio:9000
         fs.s3a.path.style.access: true
         jobmanager.rpc.address: flink-jobmanager
+        state.backend: rocksdb
+        state.backend.incremental: true
+        state.checkpoints.dir: s3a://datalake/flink/cluster-common/checkpoints/
+        state.savepoints.dir: s3a://datalake/flink/cluster-common/savepoints/
 
     volumes:
       - ./docker/flink/hadoop-core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
@@ -275,7 +279,7 @@ services:
     profiles: [ "flink" ]
     build:
       dockerfile: ./docker/flink/Dockerfile-flink1.16
-    image: 1ambda/lakehouse:flink-1.17
+    image: 1ambda/lakehouse:flink-1.16
     container_name: flink-taskmanager
     hostname: flink-taskmanager
     entrypoint: |
@@ -299,13 +303,16 @@ services:
         fs.s3a.endpoint: http://minio:9000
         fs.s3a.path.style.access: true
         jobmanager.rpc.address: flink-jobmanager
-        taskmanager.numberOfTaskSlots: 2
-        parallelism.default: 2
+        taskmanager.numberOfTaskSlots: 8
+        parallelism.default: 1
+        state.backend: rocksdb
+        state.backend.incremental: true
+        state.checkpoints.dir: s3a://datalake/flink/cluster-common/checkpoints/
+        state.savepoints.dir: s3a://datalake/flink/cluster-common/savepoints/
 
     volumes:
-      - ./docker/flink/hadoop-core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
-      - ./docker/flink/hadoop-hive-site.xml:/opt/flink/conf/hive-site.xml
-
+        - ./docker/flink/hadoop-core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+        - ./docker/flink/hadoop-hive-site.xml:/opt/flink/conf/hive-site.xml
     depends_on:
       - flink-jobmanager
 
