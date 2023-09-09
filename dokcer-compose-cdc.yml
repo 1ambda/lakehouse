@@ -14,7 +14,8 @@ x-kafka-common:
 
   depends_on:
     &kafka-common-depends
-    - zk
+    zk:
+      condition: service_healthy
 
 x-zk-common:
   &zk-common
@@ -38,6 +39,13 @@ services:
       <<: *zk-common-env
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_SERVER_ID: 1
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    restart: always
     volumes:
       - ./docker/volume/zookeeper/data:/var/lib/zookeeper/data
       - ./docker/volume/zookeeper/log:/var/lib/zookeeper/log
@@ -53,11 +61,17 @@ services:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    restart: always
     depends_on:
       *kafka-common-depends
     volumes:
       - ./docker/volume/kafka/kafka1-data:/var/lib/kafka/data
-
 
   kafka-ui:
     # profiles: [ "kafka" ]
@@ -71,41 +85,44 @@ services:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:29092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zk:2181
+    restart: always
     depends_on:
-      - zk
-      - kafka1
+      zk:
+        condition: service_healthy
+      kafka1:
+        condition: service_healthy
 
   #  kafka2:
-#    <<: *kafka-common
-#    hostname: kafka2
-#    container_name: kafka2
-#    ports:
-#      - "9093:9093"
-#      - "29093:29093"
-#    environment:
-#      <<: *kafka-common-env
-#      KAFKA_BROKER_ID: 2
-#      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:19093,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9093,DOCKER://host.docker.internal:29093
-#    depends_on:
-#      <<: *kafka-common-depends
-#    volumes:
-#      - ./docker/volume/kafka/kafka2-data:/var/lib/kafka/data
-#
-#  kafka3:
-#    <<: *kafka-common
-#    hostname: kafka3
-#    container_name: kafka3
-#    ports:
-#      - "9094:9094"
-#      - "29094:29094"
-#    environment:
-#      <<: *kafka-common-env
-#      KAFKA_BROKER_ID: 3
-#      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka3:19094,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9094,DOCKER://host.docker.internal:29094
-#    depends_on:
-#      <<: *kafka-common-depends
-#    volumes:
-#      - ./docker/volume/kafka/kafka3-data:/var/lib/kafka/data
+  #    <<: *kafka-common
+  #    hostname: kafka2
+  #    container_name: kafka2
+  #    ports:
+  #      - "9093:9093"
+  #      - "29093:29093"
+  #    environment:
+  #      <<: *kafka-common-env
+  #      KAFKA_BROKER_ID: 2
+  #      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka2:19093,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9093,DOCKER://host.docker.internal:29093
+  #    depends_on:
+  #      <<: *kafka-common-depends
+  #    volumes:
+  #      - ./docker/volume/kafka/kafka2-data:/var/lib/kafka/data
+  #
+  #  kafka3:
+  #    <<: *kafka-common
+  #    hostname: kafka3
+  #    container_name: kafka3
+  #    ports:
+  #      - "9094:9094"
+  #      - "29094:29094"
+  #    environment:
+  #      <<: *kafka-common-env
+  #      KAFKA_BROKER_ID: 3
+  #      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka3:19094,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9094,DOCKER://host.docker.internal:29094
+  #    depends_on:
+  #      <<: *kafka-common-depends
+  #    volumes:
+  #      - ./docker/volume/kafka/kafka3-data:/var/lib/kafka/data
 
 
   ####################################################################################################
@@ -121,11 +138,17 @@ services:
       - "3306:3306"
     environment:
       TZ: UTC
+      MYSQL_ROOT_USER: "root"
       MYSQL_ROOT_PASSWORD: "admin"
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      # MYSQL_USER: "mysqluser"
-      # MYSQL_PASSWORD: "mysqlpw"
-
+      MYSQL_USER: "mysqluser"
+      MYSQL_PASSWORD: "mysqlpw"
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin -u $$MYSQL_USER -p$$MYSQL_PASSWORD ping -h localhost || exit 1" ]
+      start_period: 15s
+      interval: 10s
+      timeout: 10s
+      retries: 3
     restart: always
     volumes:
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -150,9 +173,12 @@ services:
       - CONFIG_STORAGE_TOPIC=cdc.inventory.connect.configs
       - OFFSET_STORAGE_TOPIC=cdc.inventory.connect.offsets
       - STATUS_STORAGE_TOPIC=cdc.inventory.connect.statuses
+    restart: always
     depends_on:
-      - kafka1
-      - mysql
+      kafka1:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
 
 # Configure Network
 networks:
