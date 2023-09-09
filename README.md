@@ -14,6 +14,8 @@ Supported Data Pipeline Components
 | [Hudi](https://hudi.apache.org/)       | 0.13.1+ | Table Format (Lakehouse) |
 | [Airflow](https://airflow.apache.org/) | 2.7+    | Scheduler                |
 | [Jupyterlab](https://jupyter.org/)     | 3+      | Notebook                 |
+| [Kafka](https://kafka.apache.org/)     | 3.5+    | Messaging Broker         |
+| [Debezium](https://debezium.io/)       | 2.3+    | CDC Connector            |
 
 <br/>
 
@@ -30,6 +32,9 @@ COMPOSE_PROFILES=airflow docker-compose up;
 
 # Combine multiple profiles
 COMPOSE_PROFILES=trino,spark docker-compose up;
+
+# for CDC environment (Kafka, ZK, Debezium)
+COMPOSE_PROFILES=kafka docker-compose up;
 ```
 
 Then access the lakehouse services.
@@ -45,6 +50,18 @@ Then access the lakehouse services.
 - Flink SQL (Hudi): `docker exec -it flink-jobmanager flink-sql-hudi;`
 
 <br/>
+
+## CDC Starter kit
+
+```bash
+# Run cdc-related containers
+make compose.cdc;
+
+# Register debezium mysql connector
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" \
+    http://localhost:8083/connectors/ \
+    -d @docker/debezium/register-cdc-inventory.json
+```
 
 ## DBT Starter kit
 

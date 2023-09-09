@@ -34,6 +34,19 @@ compose.trino:
 compose.dbt:
 	COMPOSE_PROFILES=trino,airflow docker-compose up
 
+.PHONY: compose.cdc
+compose.cdc:
+	COMPOSE_PROFILES=kafka docker-compose -f dokcer-compose-cdc.yml up
+
+.PHONY: compose.clean
+compose.clean:
+	@ echo ""
+	@ echo ""
+	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Cleaning container volumes ('docker/volume')"
+	@ rm -rf docker/volume
+	@ echo ""
+	@ echo ""
+
 .PHONY:test
 test:
 	@ echo ""
