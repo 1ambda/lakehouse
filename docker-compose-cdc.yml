@@ -168,6 +168,7 @@ services:
     ports:
       - "8083:8083"
     environment:
+      # https://hub.docker.com/r/debezium/connect-base
       - BOOTSTRAP_SERVERS=kafka1:29092
       - GROUP_ID=cdc.inventory
       - CONFIG_STORAGE_TOPIC=cdc.inventory.connect.configs
