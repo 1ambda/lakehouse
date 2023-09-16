@@ -1,3 +1,13 @@
+### dbt ###
+target/
+dbt_modules/
+dbt_packages/
+logs/
+
+### direnv ###
+.direnv
+.envrc
+
 # Custom
 __pycache__/
 notebook/.ipynb_checkpoints/
@@ -6,9 +16,6 @@ notebook/.ipynb_checkpoints/
 .pytest_cache
 .ruff_cache/
 logs/
-
-# Created by https://www.toptal.com/developers/gitignore/api/maven,java,intellij+all,intellij+iml,git
-# Edit at https://www.toptal.com/developers/gitignore?templates=maven,java,intellij+all,intellij+iml,git
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:

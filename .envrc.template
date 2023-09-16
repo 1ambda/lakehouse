@@ -9,7 +9,7 @@ layout_virtualenv() {
   local pyversion=$1
   local pvenv=$2
   if [ -n "$(which pyenv virtualenv)" ]; then
-    pyenv virtualenv --force --quiet ${pyversion} ${pvenv}-${pyversion}
+    pyenv virtualenv --force --quiet ${pyversion} ${pvenv}
   fi
   pyenv local --unset
 }
@@ -44,10 +44,10 @@ else
 fi
 
 # Activate Environment
-echo -e "${TAG} Activating pyenv virtualenv ${pvenv}-${pyversion}"
+echo -e "${TAG} Activating pyenv virtualenv ${pvenv}"
 use python ${pyversion}
 layout virtualenv ${pyversion} ${pvenv}
-layout activate ${pvenv}-${pyversion}
+layout activate ${pvenv}
 if ! [ -x "$(command -v poetry)" ]; then
   pip3 install poetry
   pip install --upgrade pip

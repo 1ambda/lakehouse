@@ -62,12 +62,11 @@ Then access the lakehouse services.
 # Run cdc-related containers
 make compose.cdc;
 
-# Register debezium mysql connector
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" \
-    http://localhost:8083/connectors/ -d @docker/debezium/register-cdc-inventory-plain.json
+# Register debezium mysql connector using Avro Schema Registry
+make debezium.register.customers;
 
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" \
-    http://localhost:8083/connectors/ -d @docker/debezium/register-avro-inventory_products.json
+# Register debezium mysql connector using JSON Format
+make debezium.register.products;
 ```
 
 ## DBT Starter kit
