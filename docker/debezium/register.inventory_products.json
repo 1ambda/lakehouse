@@ -1,0 +1,27 @@
+{
+  "name": "cdc.inventory.products",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "tasks.max": "1",
+    "database.hostname": "mysql",
+    "database.port": "3306",
+    "database.user": "root",
+    "database.password": "admin",
+    "database.server.id": "180002",
+    "database.include.list": "inventory",
+    "table.include.list": "inventory.products",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka1:29092",
+    "schema.history.internal.kafka.topic": "cdc-avro.inventory.connect.schema-changes",
+    "topic.prefix": "cdc-avro.inventory.data",
+    "snapshot.mode": "initial",
+    "time.precision.mode": "adaptive_time_microseconds",
+    "decimal.handling.mode": "precise",
+    "bigint.unsigned.handling.mode": "long",
+    "key.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "key.converter.schema.registry.url": "http://kafka-schema-registry:8085",
+    "value.converter.schema.registry.url": "http://kafka-schema-registry:8085",
+    "internal.key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "internal.value.converter": "org.apache.kafka.connect.json.JsonConverter"
+  }
+}

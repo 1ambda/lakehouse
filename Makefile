@@ -26,6 +26,23 @@ trino.shell:
 airflow.shell:
 	docker exec -it airflow-scheduler /bin/bash
 
+.PHONY: mysql.shell
+mysql.shell:
+	mycli -u root -p admin                                                                                                                                                                                                                  │
+
+.PHONY: debezium.register
+debezium.register: debezium.register.customers debezium.register.products
+
+.PHONY: debezium.register.customers
+debezium.register.customers:
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" \
+		http://localhost:8083/connectors/ -d @docker/debezium/register.inventory_customers.json
+
+.PHONY: debezium.register.products
+debezium.register.products:
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" \
+		http://localhost:8084/connectors/ -d @docker/debezium/register.inventory_products.json
+
 .PHONY: compose.trino
 compose.trino:
 	COMPOSE_PROFILES=trino docker-compose up
@@ -36,7 +53,11 @@ compose.dbt:
 
 .PHONY: compose.cdc
 compose.cdc:
-	COMPOSE_PROFILES=flink,kafka docker-compose -f docker-compose.yml -f docker-compose-cdc.yml up
+	COMPOSE_PROFILES=kafka docker-compose -f docker-compose-cdc.yml up
+
+.PHONY: compose.stream
+compose.stream:
+	 COMPOSE_PROFILES=flink,kafka docker-compose -f docker-compose.yml -f docker-compose-cdc.yml up
 
 .PHONY: compose.clean
 compose.clean:
@@ -44,6 +65,8 @@ compose.clean:
 	@ echo ""
 	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Cleaning container volumes ('docker/volume')"
 	@ rm -rf docker/volume
+	@ docker container prune -f
+	@ docker volume prune -f
 	@ echo ""
 	@ echo ""
 
