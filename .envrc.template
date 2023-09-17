@@ -26,39 +26,11 @@ pvenv=lakehouse
 
 TAG="direnv"
 
-if ! [ -x "$(command -v pyenv)" ]; then
-  echo -e "${TAG} Installing brew CLI: pyenv, virtualenv"
-  brew install pyenv
-  brew install pyenv-virtualenv
-fi
-
-if pyenv versions | grep -q ${pyversion}; then
-  echo -e ""
-  echo -e "${TAG} Skip installing python ${pyversion}"
-  echo -e ""
-else
-  echo -e ""
-  echo -e "${TAG} Installing pyenv python ${pyversion}"
-  echo -e ""
-  pyenv install ${pyversion}
-fi
-
 # Activate Environment
 echo -e "${TAG} Activating pyenv virtualenv ${pvenv}"
 use python ${pyversion}
 layout virtualenv ${pyversion} ${pvenv}
 layout activate ${pvenv}
-if ! [ -x "$(command -v poetry)" ]; then
-  pip3 install poetry
-  pip install --upgrade pip
-fi
-
-# Install Dependencies
-echo -e "${TAG} Installing poetry dependencies"
-poetry install
-
-echo -e "${TAG} Installing pre-commit dependencies"
-pre-commit install
 
 # Start
 echo -e ""

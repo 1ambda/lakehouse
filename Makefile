@@ -70,11 +70,25 @@ compose.clean:
 	@ echo ""
 	@ echo ""
 
+.PHONY:prepare
+prepare:
+	@ echo ""
+	@ echo ""
+	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Prepare local environment"
+	@ brew install pyenv pyenv-virtualenv
+	@ pip3 install poetry
+	@ pip3 install --upgrade pip
+	@ poetry install
+	@ pre-commit install
+	@ pre-commit run
+	@ echo ""
+	@ echo ""
+
 .PHONY:test
 test:
 	@ echo ""
 	@ echo ""
-	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Executing pytest"
+	@ echo "[$(TAG)] ($(shell date '+%H:%M:%S')) - Executing tests"
 	@ AIRFLOW_HOME=$(shell pwd) poetry run pytest dags-test/
 	@ echo ""
 	@ echo ""
