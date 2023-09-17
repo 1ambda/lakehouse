@@ -57,7 +57,7 @@ compose.cdc:
 
 .PHONY: compose.stream
 compose.stream:
-	 COMPOSE_PROFILES=flink,kafka docker-compose -f docker-compose.yml -f docker-compose-cdc.yml up
+	 COMPOSE_PROFILES=kafka docker-compose -f docker-compose.yml -f docker-compose-cdc.yml up
 
 .PHONY: compose.clean
 compose.clean:

@@ -1,0 +1,34 @@
+<configuration>
+  <property>
+    <name>fs.s3a.endpoint</name>
+    <value>http://localhost:9000</value>
+  </property>
+  <property>
+    <name>fs.s3a.access.key</name>
+    <value>minio</value>
+  </property>
+  <property>
+    <name>fs.s3a.secret.key</name>
+    <value>minio123</value>
+  </property>
+  <property>
+    <name>fs.s3a.path.style.access</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>fs.s3.endpoint</name>
+    <value>http://localhost:9000</value>
+  </property>
+  <property>
+    <name>fs.s3.access.key</name>
+    <value>minio</value>
+  </property>
+  <property>
+    <name>fs.s3.secret.key</name>
+    <value>minio123</value>
+  </property>
+  <property>
+    <name>fs.s3.path.style.access</name>
+    <value>true</value>
+  </property>
+</configuration>
