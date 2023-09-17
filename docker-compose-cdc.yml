@@ -99,8 +99,6 @@ services:
     container_name: kafka-schema-registry
     ports:
       - 8085:8085
-    depends_on:
-      - kafka1
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka1:29092
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: PLAINTEXT
@@ -110,9 +108,9 @@ services:
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
       SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
-  depends_on:
-    kafka1:
-      condition: service_healthy
+    depends_on:
+      kafka1:
+        condition: service_healthy
 
   kafka1:
     <<: *kafka-common
