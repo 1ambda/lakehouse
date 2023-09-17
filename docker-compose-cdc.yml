@@ -50,6 +50,7 @@ x-connect-common:
     CONNECT_ACCESS_CONTROL_ALLOW_HEADERS: origin,content-type,accept,authorization
     CONNECT_LISTENERS: http://0.0.0.0:8083
     CONNECT_REST_PORT: 8083
+    CONNECT_REST_ADVERTISED_PORT: 8083
     # - HEAP_OPTS=-Xms2G -Xmx2G
     # - CONNECT_PRODUCER_BUFFER_MEMORY=45554432
     # - CONNECT_MAX_REQUEST_SIZE=10485760
@@ -149,12 +150,12 @@ services:
     environment:
       - DYNAMIC_CONFIG_ENABLED=true
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:29092
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:29092 #,kafka2:29093
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zk:2181
       - KAFKA_CLUSTERS_0_METRICS_PORT=9997
       - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://kafka-schema-registry:8085
       - KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME=connect-cdc
-      - KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS=http://kafka-connect-1:8083,http://kafka-connect-2:8083
+      - KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS=http://kafka-connect-1:8083 #,http://kafka-connect-2:8083
     restart: always
     depends_on:
       kafka1:
@@ -205,32 +206,8 @@ services:
       - "8083:8083"
     environment:
       <<: *connect-common-env
+      CONNECT_REST_HOST_NAME: kafka-connect-1
       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect-1
-      # KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      # VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      # INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      # INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      # CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8085
-      # CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8085
-    restart: always
-    depends_on:
-      *connect-common-depends
-
-  kafka-connect-2:
-    <<: *connect-common
-    container_name: kafka-connect-2
-    hostname: kafka-connect-2
-    ports:
-      - "8084:8083"
-    environment:
-      <<: *connect-common-env
-      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect-2
-      # KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
-      # VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
-      # INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      # INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      # CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8085
-      # CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://kafka-schema-registry:8085
     restart: always
     depends_on:
       *connect-common-depends
