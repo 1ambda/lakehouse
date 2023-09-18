@@ -4,9 +4,9 @@ set -e
 
 # If there's not maven repository url set externally,
 # default to the ones below
-MAVEN_REPO_CENTRAL=${MAVEN_REPO_CENTRAL:-"https://repo1.maven.org/maven2"}
+MAVEN_REPO_CENTRAL=${MAVEN_REPO_CENTRAL:-"http://repo1.maven.org/maven2"}
 MAVEN_REPOS_ADDITIONAL=${MAVEN_REPOS_ADDITIONAL:-""}
-MAVEN_REPO_CONFLUENT=${MAVEN_REPO_CONFLUENT:-"https://packages.confluent.io/maven"}
+MAVEN_REPO_CONFLUENT=${MAVEN_REPO_CONFLUENT:-"http://packages.confluent.io/maven"}
 MAVEN_DEP_DESTINATION=${MAVEN_DEP_DESTINATION}
 EXTERNAL_LIBS_DIR=${EXTERNAL_LIBS_DIR}
 
@@ -21,7 +21,7 @@ maven_dep() {
     DOWNLOAD_FILE="$DOWNLOAD_FILE_TMP_PATH/$FILE"
     test -d $DOWNLOAD_FILE_TMP_PATH || mkdir -p $DOWNLOAD_FILE_TMP_PATH
 
-    curl -sfSL -o "$DOWNLOAD_FILE" "$REPO/$GROUP/$PACKAGE/$VERSION/$FILE"
+    curl -o "$DOWNLOAD_FILE" "$REPO/$GROUP/$PACKAGE/$VERSION/$FILE"
 }
 
 maven_central_dep() {
