@@ -47,6 +47,8 @@ Then access the lakehouse services.
 - Trino: http://localhost:8889
 - Airflow (`airflow` / `airflow`) : http://localhost:8080
 - Local S3 Minio (`minio` / `minio123`): http://localhost:9000
+- Flink Job Manager UI (Docker): http://localhost:8082
+- Flink Job Manager UI (LocalApplication): http://localhost:8081
 - PySpark Jupyter Notebook (Iceberg): http://localhost:8900
 - PySpark Jupyter Notebook (Hudi): http://localhost:8901
 - Spark SQL (Iceberg): `docker exec -it spark-iceberg spark-sql`
@@ -77,11 +79,11 @@ The Flink SQL Application within this project is written in Kotlin for SQL Reada
 
 You can run it as an Application in IDEA. (it is not a Kotlin Application)
 For Flink Application, the required dependencies are already included within the Production Docker Image or EMR cluster.
+
 Therefore, they are set as 'Provided' dependencies in the Maven project, so to run them locally,
 you can include the `Add dependencies with "provided" scope to classpath"` IDEA option as shown in the screenshot below.
 
 After running the Local Flink Application, you can access the Flink Job Manager UI from localhost:8081.
-- [(Flink Job Manager UI of Local Application) http://localhost:8081/](http://localhost:8081/)
 
 ![idea](./docs/images/idea.png)
 
