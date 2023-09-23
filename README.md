@@ -69,6 +69,23 @@ make debezium.register.customers;
 make debezium.register.products;
 ```
 
+### Running Flink Applications
+
+Flink supports Java 11 but uses Java 8 due to its SQL (Hive) dependency.
+The Flink SQL Application within this project is written in Kotlin for SQL Readability.
+
+
+You can run it as an Application in IDEA. (it is not a Kotlin Application)
+For Flink Application, the required dependencies are already included within the Production Docker Image or EMR cluster.
+Therefore, they are set as 'Provided' dependencies in the Maven project, so to run them locally,
+you can include the `Add dependencies with "provided" scope to classpath"` IDEA option as shown in the screenshot below.
+
+After running the Local Flink Application, you can access the Flink Job Manager UI from localhost:8081.
+- [(Flink Job Manager UI of Local Application) http://localhost:8081/](http://localhost:8081/)
+
+![idea](./docs/images/idea.png)
+
+
 ## DBT Starter kit
 
 ```bash
@@ -98,3 +115,17 @@ $ SELECT * FROM iceberg.staging.stg_regions LIMIT 10;
 make airflow.shell;
 airflow dags backfill dag_dbt --local --reset-dagruns  -s 2022-09-02 -e 2022-09-03;
 ```
+
+## Screenshots
+
+### Flink Job Manager UI
+![flink](./docs/images/flink.png)
+
+### Kafka UI
+![kafka](./docs/images/kafka.png)
+
+### Minio UI
+![minio](./docs/images/minio.png)
+
+### Running Local Flink Application in IDEA
+![kafka](./docs/images/application.png)
